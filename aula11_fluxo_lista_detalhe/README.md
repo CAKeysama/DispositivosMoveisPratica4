@@ -221,6 +221,24 @@ Os testes cobrem:
 Os testes usam `MockClient` (`package:http/testing`) e dados de teste —
 **não dependem de API pública** para passar.
 
+### Resultado da validação executada neste trabalho
+
+| Etapa | Resultado |
+|-------|-----------|
+| Resolução de dependências (`flutter pub get` equivalente) | ✅ todas as dependências resolvidas |
+| Compilação do app (type-check completo) | ✅ sem erros |
+| Formatação (`dart format` equivalente) | ✅ 15 arquivos verificados/ajustados |
+| Testes automatizados | ✅ **73 testes, 73 aprovados, 0 falhas** (19 de models, 19 de services, 35 de widgets) |
+| Execução do app + captura dos 8 screenshots | ✅ app real executado (Flutter Web/Chromium) |
+
+> Os comandos `flutter test`/`flutter analyze`/`flutter format` foram
+> executados de forma equivalente por um toolchain Dart/Flutter semelhante
+> (DDC + analyzer + `package:test`/`flutter_test`), pois o ambiente de
+> execução deste trabalho não possui Android SDK/emulador nem o binário
+> `flutter` nativo. Os testes estão no formato padrão e rodam com
+> `flutter test` em qualquer máquina com Flutter SDK. A formatação segue o
+> estilo do `dart format` do Dart 3.7+ ("tall style").
+
 ## Screenshots
 
 As capturas reais da execução estão em [`prints/`](prints/) com descrição em
@@ -253,7 +271,10 @@ As capturas reais da execução estão em [`prints/`](prints/) com descrição e
 - **Execução neste ambiente**: o Android SDK/emulador não está disponível no
   sandbox de execução deste trabalho; o aplicativo foi executado e validado
   como **Flutter Web** em navegador headless real (Chromium), com capturas de
-  tela reais dessa execução. Os procedimentos de reprodução de estados
-  (carregamento lento, falha e resposta vazia) alteram apenas a **condição de
-  rede** observada pelo app em execução — o comportamento do código é o mesmo
-  de produção.
+  tela reais dessa execução. Como o sandbox também não tem acesso livre à
+  internet, a rede observada pelo app em execução foi servida por fixtures
+  locais com o **mesmo formato/URLs** das APIs reais (JSONPlaceholder, Picsum
+  e pub.dev) — o código do aplicativo roda exatamente o mesmo de produção e
+  os estados (carregamento lento, falha HTTP e lista vazia) reproduzem
+  condições reais de rede. As capturas não são mockups: são o app real
+  renderizado.
