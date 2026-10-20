@@ -35,13 +35,16 @@ Widget montarApp({
 
 void main() {
   group('DetalheNoticiaScreen - conteúdo', () {
-    testWidgets('exibe AppBar, título, autor, data e conteúdo completo',
-        (tester) async {
-      await tester.pumpWidget(montarApp(
-        comentarios: ComentarioService(
-          client: ApiFake.resposta(statusCode: 200, body: '[]'),
+    testWidgets('exibe AppBar, título, autor, data e conteúdo completo', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        montarApp(
+          comentarios: ComentarioService(
+            client: ApiFake.resposta(statusCode: 200, body: '[]'),
+          ),
         ),
-      ));
+      );
       await tester.pumpAndSettle();
 
       expect(find.text('Detalhes da Notícia'), findsOneWidget);
@@ -50,13 +53,15 @@ void main() {
       expect(find.text('Data não informada'), findsOneWidget);
       expect(
         find.text(
-            'Conteúdo integral da notícia de teste para verificação da tela.'),
+          'Conteúdo integral da notícia de teste para verificação da tela.',
+        ),
         findsOneWidget,
       );
     });
 
-    testWidgets('exibe a data quando disponibilizada pelos dados',
-        (tester) async {
+    testWidgets('exibe a data quando disponibilizada pelos dados', (
+      tester,
+    ) async {
       final NoticiaModel comData = NoticiaModel.fromJson(<String, dynamic>{
         'id': 2,
         'userId': 1,
@@ -65,24 +70,30 @@ void main() {
         'dataPublicacao': '2024-05-01',
       });
 
-      await tester.pumpWidget(montarApp(
-        noticia: comData,
-        comentarios: ComentarioService(
-          client: ApiFake.resposta(statusCode: 200, body: '[]'),
+      await tester.pumpWidget(
+        montarApp(
+          noticia: comData,
+          comentarios: ComentarioService(
+            client: ApiFake.resposta(statusCode: 200, body: '[]'),
+          ),
         ),
-      ));
+      );
       await tester.pumpAndSettle();
 
       expect(find.text('2024-05-01'), findsOneWidget);
       expect(find.text('Data não informada'), findsNothing);
     });
 
-    testWidgets('usa SingleChildScrollView + Column com rolagem', (tester) async {
-      await tester.pumpWidget(montarApp(
-        comentarios: ComentarioService(
-          client: ApiFake.resposta(statusCode: 200, body: '[]'),
+    testWidgets('usa SingleChildScrollView + Column com rolagem', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        montarApp(
+          comentarios: ComentarioService(
+            client: ApiFake.resposta(statusCode: 200, body: '[]'),
+          ),
         ),
-      ));
+      );
       await tester.pumpAndSettle();
 
       expect(find.byType(SingleChildScrollView), findsOneWidget);
@@ -90,105 +101,150 @@ void main() {
     });
 
     testWidgets('capa usa Hero com a tag da notícia', (tester) async {
-      await tester.pumpWidget(montarApp(
-        comentarios: ComentarioService(
-          client: ApiFake.resposta(statusCode: 200, body: '[]'),
+      await tester.pumpWidget(
+        montarApp(
+          comentarios: ComentarioService(
+            client: ApiFake.resposta(statusCode: 200, body: '[]'),
+          ),
         ),
-      ));
+      );
       await tester.pumpAndSettle();
 
       expect(
-        find.byWidgetPredicate((Widget w) => w is Hero && w.tag == noticiaDeTeste.id),
+        find.byWidgetPredicate(
+          (Widget w) => w is Hero && w.tag == noticiaDeTeste.id,
+        ),
         findsOneWidget,
       );
     });
 
-    testWidgets('imagem de rede falha e mostra o placeholder local',
-        (tester) async {
-      await tester.pumpWidget(montarApp(
-        comentarios: ComentarioService(
-          client: ApiFake.resposta(statusCode: 200, body: '[]'),
+    testWidgets('capa da notícia renderiza com placeholder quando necessário', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        montarApp(
+          comentarios: ComentarioService(
+            client: ApiFake.resposta(statusCode: 200, body: '[]'),
+          ),
         ),
-      ));
+      );
       await tester.pumpAndSettle();
 
       expect(find.byType(CapaNoticia), findsOneWidget);
-      expect(find.textContaining('Imagem indisponível'), findsOneWidget);
 
       // A falha da imagem não impede a leitura da notícia.
       expect(find.text('Notícia de teste completa'), findsOneWidget);
     });
+
+    testWidgets('exibe placeholder visual quando a imagem da URL falha', (
+      tester,
+    ) async {
+      // URL inacessível em qualquer ambiente: a imagem falha e o fallback
+      // visual local (errorBuilder) é exibido, mantendo o layout estável.
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: Scaffold(
+            body: CapaNoticia(
+              urlImagem: 'https://fotos-indisponiveis.test/capa.png',
+              heroTag: 99,
+              tituloPlaceholder: 'Título de teste',
+            ),
+          ),
+        ),
+      );
+
+      // Deixa a falha de rede acontecer (comportamento assíncrono real).
+      await tester.runAsync(
+        () => Future<void>.delayed(const Duration(milliseconds: 400)),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.textContaining('Imagem indisponível'), findsOneWidget);
+      expect(find.textContaining('Título de teste'), findsOneWidget);
+    });
   });
 
   group('DetalheNoticiaScreen - favoritos', () {
-    testWidgets('botão de favoritar inicia desmarcado e alterna o estado',
-        (tester) async {
-      await tester.pumpWidget(montarApp(
-        comentarios: ComentarioService(
-          client: ApiFake.resposta(statusCode: 200, body: '[]'),
+    testWidgets('botão de favoritar inicia desmarcado e alterna o estado', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        montarApp(
+          comentarios: ComentarioService(
+            client: ApiFake.resposta(statusCode: 200, body: '[]'),
+          ),
         ),
-      ));
+      );
       await tester.pumpAndSettle();
 
-      expect(find.byIcon(Icons.favorite_border), findsOneWidget);
-      expect(find.byIcon(Icons.favorite), findsNothing);
+      // Estado inicial: botão de favoritar disponível (não favorita).
+      expect(find.byTooltip('Favoritar notícia'), findsOneWidget);
+      expect(find.text('Não favorita'), findsOneWidget);
 
-      await tester.tap(find.byIcon(Icons.favorite_border));
+      await tester.tap(find.byTooltip('Favoritar notícia'));
       await tester.pump(const Duration(seconds: 2));
       await tester.pumpAndSettle();
 
-      expect(find.byIcon(Icons.favorite), findsOneWidget);
-      expect(find.byIcon(Icons.favorite_border), findsNothing);
+      // Estado alternado: botão de desfavoritar + meta "Favorita".
+      expect(find.byTooltip('Desfavoritar notícia'), findsOneWidget);
       expect(find.text('Favorita'), findsOneWidget);
     });
 
-    testWidgets('inicialmenteFavorita reflete o estado recebido do feed',
-        (tester) async {
-      await tester.pumpWidget(montarApp(
-        favorita: true,
-        comentarios: ComentarioService(
-          client: ApiFake.resposta(statusCode: 200, body: '[]'),
+    testWidgets('inicialmenteFavorita reflete o estado recebido do feed', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        montarApp(
+          favorita: true,
+          comentarios: ComentarioService(
+            client: ApiFake.resposta(statusCode: 200, body: '[]'),
+          ),
         ),
-      ));
+      );
       await tester.pumpAndSettle();
 
-      expect(find.byIcon(Icons.favorite), findsOneWidget);
-      expect(find.text('Desfavoritar notícia'), findsOneWidget);
+      expect(find.byTooltip('Desfavoritar notícia'), findsOneWidget);
+      expect(find.text('Favorita'), findsOneWidget);
     });
 
-    testWidgets('voltar retorna Navigator.pop(true) quando favoritada',
-        (tester) async {
+    testWidgets('voltar retorna Navigator.pop(true) quando favoritada', (
+      tester,
+    ) async {
       bool? resultado;
-      await tester.pumpWidget(MaterialApp(
-        home: Builder(
-          builder: (BuildContext context) => Scaffold(
-            body: Center(
-              child: ElevatedButton(
-                onPressed: () async {
-                  resultado = await Navigator.push<bool>(
-                    context,
-                    MaterialPageRoute<bool>(
-                      builder: (BuildContext context) => DetalheNoticiaScreen(
-                        noticia: noticiaDeTeste,
-                        comentarioService: ComentarioService(
-                          client:
-                              ApiFake.resposta(statusCode: 200, body: '[]'),
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Builder(
+            builder: (BuildContext context) => Scaffold(
+              body: Center(
+                child: ElevatedButton(
+                  onPressed: () async {
+                    resultado = await Navigator.push<bool>(
+                      context,
+                      MaterialPageRoute<bool>(
+                        builder: (BuildContext context) => DetalheNoticiaScreen(
+                          noticia: noticiaDeTeste,
+                          comentarioService: ComentarioService(
+                            client: ApiFake.resposta(
+                              statusCode: 200,
+                              body: '[]',
+                            ),
+                          ),
                         ),
                       ),
-                    ),
-                  );
-                },
-                child: const Text('abrir'),
+                    );
+                  },
+                  child: const Text('abrir'),
+                ),
               ),
             ),
           ),
         ),
-      ));
+      );
 
       await tester.tap(find.text('abrir'));
       await tester.pumpAndSettle();
 
-      await tester.tap(find.byIcon(Icons.favorite_border));
+      await tester.tap(find.byTooltip('Favoritar notícia'));
       await tester.pump(const Duration(seconds: 2));
       await tester.pumpAndSettle();
 
@@ -198,35 +254,40 @@ void main() {
       expect(resultado, isTrue);
     });
 
-    testWidgets('voltar retorna Navigator.pop(false) quando desfavoritada',
-        (tester) async {
+    testWidgets('voltar retorna Navigator.pop(false) quando desfavoritada', (
+      tester,
+    ) async {
       bool? resultado;
-      await tester.pumpWidget(MaterialApp(
-        home: Builder(
-          builder: (BuildContext context) => Scaffold(
-            body: Center(
-              child: ElevatedButton(
-                onPressed: () async {
-                  resultado = await Navigator.push<bool>(
-                    context,
-                    MaterialPageRoute<bool>(
-                      builder: (BuildContext context) => DetalheNoticiaScreen(
-                        noticia: noticiaDeTeste,
-                        inicialmenteFavorita: true,
-                        comentarioService: ComentarioService(
-                          client:
-                              ApiFake.resposta(statusCode: 200, body: '[]'),
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Builder(
+            builder: (BuildContext context) => Scaffold(
+              body: Center(
+                child: ElevatedButton(
+                  onPressed: () async {
+                    resultado = await Navigator.push<bool>(
+                      context,
+                      MaterialPageRoute<bool>(
+                        builder: (BuildContext context) => DetalheNoticiaScreen(
+                          noticia: noticiaDeTeste,
+                          inicialmenteFavorita: true,
+                          comentarioService: ComentarioService(
+                            client: ApiFake.resposta(
+                              statusCode: 200,
+                              body: '[]',
+                            ),
+                          ),
                         ),
                       ),
-                    ),
-                  );
-                },
-                child: const Text('abrir'),
+                    );
+                  },
+                  child: const Text('abrir'),
+                ),
               ),
             ),
           ),
         ),
-      ));
+      );
 
       await tester.tap(find.text('abrir'));
       await tester.pumpAndSettle();
@@ -244,14 +305,16 @@ void main() {
 
   group('DetalheNoticiaScreen - comentários', () {
     testWidgets('exibe estado de carregamento dos comentários', (tester) async {
-      await tester.pumpWidget(montarApp(
-        comentarios: ComentarioService(
-          client: ApiFake.respostaLenta(
-            atraso: const Duration(milliseconds: 400),
-            body: '[]',
+      await tester.pumpWidget(
+        montarApp(
+          comentarios: ComentarioService(
+            client: ApiFake.respostaLenta(
+              atraso: const Duration(milliseconds: 400),
+              body: '[]',
+            ),
           ),
         ),
-      ));
+      );
 
       // Um CircularProgressIndicator na seção de comentários.
       expect(find.byType(CircularProgressIndicator), findsOneWidget);
@@ -261,13 +324,16 @@ void main() {
       await tester.pumpAndSettle();
     });
 
-    testWidgets('lista de comentários mostra nome, e-mail e texto',
-        (tester) async {
-      await tester.pumpWidget(montarApp(
-        comentarios: ComentarioService(
-          client: ApiFake.comentariosComSucesso(quantidade: 2),
+    testWidgets('lista de comentários mostra nome, e-mail e texto', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        montarApp(
+          comentarios: ComentarioService(
+            client: ApiFake.comentariosComSucesso(quantidade: 2),
+          ),
         ),
-      ));
+      );
       await tester.pumpAndSettle();
 
       expect(find.text('Comentarista 1'), findsOneWidget);
@@ -279,23 +345,28 @@ void main() {
     });
 
     testWidgets('estado de lista vazia', (tester) async {
-      await tester.pumpWidget(montarApp(
-        comentarios: ComentarioService(
-          client: ApiFake.resposta(statusCode: 200, body: '[]'),
+      await tester.pumpWidget(
+        montarApp(
+          comentarios: ComentarioService(
+            client: ApiFake.resposta(statusCode: 200, body: '[]'),
+          ),
         ),
-      ));
+      );
       await tester.pumpAndSettle();
 
       expect(find.text('Nenhum comentário para esta notícia.'), findsOneWidget);
     });
 
-    testWidgets('erro nos comentários preserva a notícia na tela',
-        (tester) async {
-      await tester.pumpWidget(montarApp(
-        comentarios: ComentarioService(
-          client: ApiFake.resposta(statusCode: 500, body: 'x'),
+    testWidgets('erro nos comentários preserva a notícia na tela', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        montarApp(
+          comentarios: ComentarioService(
+            client: ApiFake.resposta(statusCode: 500, body: 'x'),
+          ),
         ),
-      ));
+      );
       await tester.pumpAndSettle();
 
       // Erro somente na região de comentários.
@@ -307,88 +378,108 @@ void main() {
       expect(find.text('Autor ID 4'), findsOneWidget);
       expect(
         find.text(
-            'Conteúdo integral da notícia de teste para verificação da tela.'),
+          'Conteúdo integral da notícia de teste para verificação da tela.',
+        ),
         findsOneWidget,
       );
     });
 
-    testWidgets('falha de rede nos comentários mostra mensagem amigável',
-        (tester) async {
-      await tester.pumpWidget(montarApp(
-        comentarios: ComentarioService(client: ApiFake.falhaDeRede()),
-      ));
+    testWidgets('falha de rede nos comentários mostra mensagem amigável', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        montarApp(
+          comentarios: ComentarioService(client: ApiFake.falhaDeRede()),
+        ),
+      );
       await tester.pumpAndSettle();
 
       expect(find.textContaining('Verifique sua conexão'), findsOneWidget);
     });
 
-    testWidgets('botão tentar novamente recarrega os comentários',
-        (tester) async {
+    testWidgets('botão tentar novamente recarrega os comentários', (
+      tester,
+    ) async {
       bool falhar = true;
-      await tester.pumpWidget(montarApp(
-        comentarios: ComentarioService(
-          client: MockClient((http.Request _) async {
-            if (falhar) {
-              return http.Response('erro', 503);
-            }
-            return http.Response(
-              '[{"id":1,"postId":1,"name":"Recuperado","email":"r@example.com","body":"Comentário recuperado."}]',
-              200,
-            );
-          }),
+      await tester.pumpWidget(
+        montarApp(
+          comentarios: ComentarioService(
+            client: MockClient((http.Request _) async {
+              if (falhar) {
+                return http.Response('erro', 503);
+              }
+              return http.Response(
+                '[{"id":1,"postId":1,"name":"Recuperado","email":"r@example.com","body":"Comentário recuperado."}]',
+                200,
+              );
+            }),
+          ),
         ),
-      ));
+      );
       await tester.pumpAndSettle();
       expect(find.byIcon(Icons.error_outline), findsOneWidget);
 
       falhar = false;
+      // Rola até o botão (a seção pode estar abaixo da área visível).
+      await tester.ensureVisible(find.text('Tentar novamente'));
+      await tester.pumpAndSettle();
       await tester.tap(find.text('Tentar novamente'));
       await tester.pumpAndSettle();
 
+      await tester.ensureVisible(find.text('Recuperado'));
+      await tester.pumpAndSettle();
       expect(find.text('Recuperado'), findsOneWidget);
       expect(find.text('Comentário recuperado.'), findsOneWidget);
       expect(find.byIcon(Icons.error_outline), findsNothing);
     });
 
-    testWidgets('requisição de comentários usa o id da notícia recebida',
-        (tester) async {
+    testWidgets('requisição de comentários usa o id da notícia recebida', (
+      tester,
+    ) async {
       final List<Uri> chamadas = <Uri>[];
-      await tester.pumpWidget(montarApp(
-        comentarios: ComentarioService(
-          client: MockClient((http.Request request) async {
-            chamadas.add(request.url);
-            return http.Response('[]', 200);
-          }),
+      await tester.pumpWidget(
+        montarApp(
+          comentarios: ComentarioService(
+            client: MockClient((http.Request request) async {
+              chamadas.add(request.url);
+              return http.Response('[]', 200);
+            }),
+          ),
         ),
-      ));
+      );
       await tester.pumpAndSettle();
 
       expect(chamadas, hasLength(1));
       expect(chamadas.single.path, '/posts/${noticiaDeTeste.id}/comments');
     });
 
-    testWidgets('reutiliza o objeto recebido sem refazer a requisição da notícia',
-        (tester) async {
-      // Somente a requisição de comentários é feita na tela de detalhes:
-      // nenhum GET para /posts (lista ou item) acontece aqui.
-      final List<String> caminhos = <String>[];
-      await tester.pumpWidget(montarApp(
-        comentarios: ComentarioService(
-          client: MockClient((http.Request request) async {
-            caminhos.add(request.url.path);
-            return http.Response('[]', 200);
-          }),
-        ),
-      ));
-      await tester.pumpAndSettle();
+    testWidgets(
+      'reutiliza o objeto recebido sem refazer a requisição da notícia',
+      (tester) async {
+        // Somente a requisição de comentários é feita na tela de detalhes:
+        // nenhum GET para /posts (lista ou item) acontece aqui.
+        final List<String> caminhos = <String>[];
+        await tester.pumpWidget(
+          montarApp(
+            comentarios: ComentarioService(
+              client: MockClient((http.Request request) async {
+                caminhos.add(request.url.path);
+                return http.Response('[]', 200);
+              }),
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
 
-      expect(caminhos, <String>['/posts/${noticiaDeTeste.id}/comments']);
-    });
+        expect(caminhos, <String>['/posts/${noticiaDeTeste.id}/comments']);
+      },
+    );
   });
 
   group('Timeout', () {
-    testWidgets('comentários lentos não deixam a tela presa para sempre',
-        (tester) async {
+    testWidgets('comentários lentos não deixam a tela presa para sempre', (
+      tester,
+    ) async {
       final ComentarioService service = ComentarioService(
         client: MockClient((http.Request _) {
           return Completer<http.Response>().future; // nunca responde

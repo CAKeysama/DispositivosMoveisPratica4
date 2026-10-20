@@ -53,22 +53,26 @@ class CapaNoticia extends StatelessWidget {
             width: largura,
             height: altura,
             // Placeholder enquanto a imagem carrega: mantém o layout estável.
-            loadingBuilder: (BuildContext context, Widget child,
-                ImageChunkEvent? progresso) {
-              if (progresso == null) {
-                return child;
-              }
-              return ColoredBox(
-                color: cores.surfaceContainerHighest,
-                child: const Center(
-                  child: SizedBox(
-                    width: 28,
-                    height: 28,
-                    child: CircularProgressIndicator(strokeWidth: 3),
-                  ),
-                ),
-              );
-            },
+            loadingBuilder:
+                (
+                  BuildContext context,
+                  Widget child,
+                  ImageChunkEvent? progresso,
+                ) {
+                  if (progresso == null) {
+                    return child;
+                  }
+                  return ColoredBox(
+                    color: cores.surfaceContainerHighest,
+                    child: const Center(
+                      child: SizedBox(
+                        width: 28,
+                        height: 28,
+                        child: CircularProgressIndicator(strokeWidth: 3),
+                      ),
+                    ),
+                  );
+                },
             // Fallback local quando a imagem remota falha.
             errorBuilder: (BuildContext context, Object erro, StackTrace? _) {
               return _PlaceholderCapa(

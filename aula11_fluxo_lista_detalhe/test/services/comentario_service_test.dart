@@ -3,10 +3,7 @@ import 'dart:convert';
 import 'package:aula11_fluxo_lista_detalhe/models/comentario_model.dart';
 import 'package:aula11_fluxo_lista_detalhe/services/comentario_service.dart';
 import 'package:aula11_fluxo_lista_detalhe/services/noticia_service.dart'
-    show
-        NoticiaFormatoException,
-        NoticiaHttpException,
-        NoticiaRedeException;
+    show NoticiaFormatoException, NoticiaHttpException, NoticiaRedeException;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
@@ -16,11 +13,13 @@ import '../helpers/api_fake.dart';
 void main() {
   group('ComentarioService.buscarComentarios', () {
     test('converte a lista JSON em ComentarioModel (status 200)', () async {
-      final ComentarioService service =
-          ComentarioService(client: ApiFake.comentariosComSucesso(quantidade: 3));
+      final ComentarioService service = ComentarioService(
+        client: ApiFake.comentariosComSucesso(quantidade: 3),
+      );
 
-      final List<ComentarioModel> comentarios =
-          await service.buscarComentarios(7);
+      final List<ComentarioModel> comentarios = await service.buscarComentarios(
+        7,
+      );
 
       expect(comentarios, hasLength(3));
       expect(comentarios.first, isA<ComentarioModel>());
@@ -47,8 +46,9 @@ void main() {
     });
 
     test('lista vazia retorna lista vazia sem erro', () async {
-      final ComentarioService service =
-          ComentarioService(client: ApiFake.resposta(statusCode: 200, body: '[]'));
+      final ComentarioService service = ComentarioService(
+        client: ApiFake.resposta(statusCode: 200, body: '[]'),
+      );
 
       expect(await service.buscarComentarios(1), isEmpty);
     });
@@ -60,8 +60,13 @@ void main() {
 
       await expectLater(
         service.buscarComentarios(1),
-        throwsA(isA<NoticiaHttpException>()
-            .having((NoticiaHttpException e) => e.statusCode, 'statusCode', 503)),
+        throwsA(
+          isA<NoticiaHttpException>().having(
+            (NoticiaHttpException e) => e.statusCode,
+            'statusCode',
+            503,
+          ),
+        ),
       );
     });
 
@@ -77,8 +82,9 @@ void main() {
     });
 
     test('lança NoticiaRedeException em falha de rede', () async {
-      final ComentarioService service =
-          ComentarioService(client: ApiFake.falhaDeRede());
+      final ComentarioService service = ComentarioService(
+        client: ApiFake.falhaDeRede(),
+      );
 
       await expectLater(
         service.buscarComentarios(1),
@@ -108,8 +114,9 @@ void main() {
         ),
       );
 
-      final List<ComentarioModel> comentarios =
-          await service.buscarComentarios(5);
+      final List<ComentarioModel> comentarios = await service.buscarComentarios(
+        5,
+      );
 
       expect(comentarios.single.nome, '');
       expect(comentarios.single.email, '');

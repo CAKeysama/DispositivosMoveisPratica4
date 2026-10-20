@@ -58,8 +58,7 @@ class ComentarioModel {
   static int _inteiroOuZero(dynamic valor) =>
       valor is int ? valor : int.tryParse('$valor') ?? 0;
 
-  static String _textoOuVazio(dynamic valor) =>
-      valor is String ? valor : '';
+  static String _textoOuVazio(dynamic valor) => valor is String ? valor : '';
 
   @override
   bool operator ==(Object other) =>

@@ -39,20 +39,22 @@ void main() {
     });
 
     testWidgets('exibe o título Portal de Notícias na AppBar', (tester) async {
-      await tester
-          .pumpWidget(montarApp(NoticiaService(client: ApiFake.resposta(
-        statusCode: 200,
-        body: '[]',
-      ))));
+      await tester.pumpWidget(
+        montarApp(
+          NoticiaService(client: ApiFake.resposta(statusCode: 200, body: '[]')),
+        ),
+      );
 
       expect(find.text('Portal de Notícias'), findsOneWidget);
       await tester.pumpAndSettle();
     });
 
-    testWidgets('renderiza a lista com ListView.builder e Cards',
-        (tester) async {
-      final NoticiaService service =
-          NoticiaService(client: ApiFake.noticiasComSucesso(quantidade: 3));
+    testWidgets('renderiza a lista com ListView.builder e Cards', (
+      tester,
+    ) async {
+      final NoticiaService service = NoticiaService(
+        client: ApiFake.noticiasComSucesso(quantidade: 3),
+      );
 
       await tester.pumpWidget(montarApp(service));
       await tester.pumpAndSettle();
@@ -64,8 +66,9 @@ void main() {
       expect(find.text('Título da notícia 3'), findsOneWidget);
     });
 
-    testWidgets('exibe resumo e indicador de detalhes em cada item',
-        (tester) async {
+    testWidgets('exibe resumo e indicador de detalhes em cada item', (
+      tester,
+    ) async {
       final NoticiaService service = NoticiaService(
         client: ApiFake.resposta(
           statusCode: 200,
@@ -81,10 +84,12 @@ void main() {
       expect(find.text('Autor ID 5'), findsOneWidget);
     });
 
-    testWidgets('estado de erro mostra mensagem e botão de nova tentativa',
-        (tester) async {
-      final NoticiaService service =
-          NoticiaService(client: ApiFake.resposta(statusCode: 500, body: 'x'));
+    testWidgets('estado de erro mostra mensagem e botão de nova tentativa', (
+      tester,
+    ) async {
+      final NoticiaService service = NoticiaService(
+        client: ApiFake.resposta(statusCode: 500, body: 'x'),
+      );
 
       await tester.pumpWidget(montarApp(service));
       await tester.pumpAndSettle();
@@ -95,8 +100,9 @@ void main() {
     });
 
     testWidgets('falha de rede mostra mensagem amigável', (tester) async {
-      final NoticiaService service =
-          NoticiaService(client: ApiFake.falhaDeRede());
+      final NoticiaService service = NoticiaService(
+        client: ApiFake.falhaDeRede(),
+      );
 
       await tester.pumpWidget(montarApp(service));
       await tester.pumpAndSettle();
@@ -104,8 +110,9 @@ void main() {
       expect(find.textContaining('Verifique sua conexão'), findsOneWidget);
     });
 
-    testWidgets('estado vazio mostra mensagem e botão de atualizar',
-        (tester) async {
+    testWidgets('estado vazio mostra mensagem e botão de atualizar', (
+      tester,
+    ) async {
       final NoticiaService service = NoticiaService(
         client: ApiFake.resposta(statusCode: 200, body: '[]'),
       );
@@ -144,8 +151,9 @@ void main() {
 
     testWidgets('abre os detalhes com Navigator.push e passa o objeto '
         'NoticiaModel completo', (tester) async {
-      final NoticiaService service =
-          NoticiaService(client: ApiFake.noticiasComSucesso(quantidade: 2));
+      final NoticiaService service = NoticiaService(
+        client: ApiFake.noticiasComSucesso(quantidade: 2),
+      );
 
       await tester.pumpWidget(montarApp(service));
       await tester.pumpAndSettle();
@@ -163,17 +171,20 @@ void main() {
       expect(find.text('Autor ID 11'), findsOneWidget);
 
       // Conteúdo integral (não apenas o resumo).
-      final DetalheNoticiaScreen tela =
-          tester.widget<DetalheNoticiaScreen>(find.byType(DetalheNoticiaScreen));
+      final DetalheNoticiaScreen tela = tester.widget<DetalheNoticiaScreen>(
+        find.byType(DetalheNoticiaScreen),
+      );
       expect(tela.noticia.id, 1);
       expect(tela.noticia.titulo, 'Título da notícia 1');
       expect(tela.noticia.conteudoCompleto, contains('Corpo da notícia'));
     });
 
-    testWidgets('detalhes recebem exatamente a notícia selecionada',
-        (tester) async {
-      final NoticiaService service =
-          NoticiaService(client: ApiFake.noticiasComSucesso(quantidade: 2));
+    testWidgets('detalhes recebem exatamente a notícia selecionada', (
+      tester,
+    ) async {
+      final NoticiaService service = NoticiaService(
+        client: ApiFake.noticiasComSucesso(quantidade: 2),
+      );
 
       await tester.pumpWidget(montarApp(service));
       await tester.pumpAndSettle();
@@ -181,16 +192,19 @@ void main() {
       await tester.tap(find.text('Título da notícia 2'));
       await tester.pumpAndSettle();
 
-      final DetalheNoticiaScreen tela =
-          tester.widget<DetalheNoticiaScreen>(find.byType(DetalheNoticiaScreen));
+      final DetalheNoticiaScreen tela = tester.widget<DetalheNoticiaScreen>(
+        find.byType(DetalheNoticiaScreen),
+      );
       expect(tela.noticia.id, 2);
       expect(tela.noticia.autor, 'Autor ID 12');
     });
 
-    testWidgets('Hero Animation: cada item tem tag única por notícia',
-        (tester) async {
-      final NoticiaService service =
-          NoticiaService(client: ApiFake.noticiasComSucesso(quantidade: 3));
+    testWidgets('Hero Animation: cada item tem tag única por notícia', (
+      tester,
+    ) async {
+      final NoticiaService service = NoticiaService(
+        client: ApiFake.noticiasComSucesso(quantidade: 3),
+      );
 
       await tester.pumpWidget(montarApp(service));
       await tester.pumpAndSettle();
@@ -198,17 +212,18 @@ void main() {
       expect(find.byType(Hero), findsNWidgets(3));
       for (final int id in <int>[1, 2, 3]) {
         expect(
-          find.byWidgetPredicate(
-              (Widget w) => w is Hero && w.tag == id),
+          find.byWidgetPredicate((Widget w) => w is Hero && w.tag == id),
           findsOneWidget,
         );
       }
     });
 
-    testWidgets('Hero do feed e da capa dos detalhes usam a mesma tag',
-        (tester) async {
-      final NoticiaService service =
-          NoticiaService(client: ApiFake.noticiasComSucesso(quantidade: 1));
+    testWidgets('Hero do feed e da capa dos detalhes usam a mesma tag', (
+      tester,
+    ) async {
+      final NoticiaService service = NoticiaService(
+        client: ApiFake.noticiasComSucesso(quantidade: 1),
+      );
 
       await tester.pumpWidget(montarApp(service));
       await tester.pumpAndSettle();
@@ -223,10 +238,12 @@ void main() {
       );
     });
 
-    testWidgets('após favoritar nos detalhes, o feed reflete o favorito',
-        (tester) async {
-      final NoticiaService service =
-          NoticiaService(client: ApiFake.noticiasComSucesso(quantidade: 2));
+    testWidgets('após favoritar nos detalhes, o feed reflete o favorito', (
+      tester,
+    ) async {
+      final NoticiaService service = NoticiaService(
+        client: ApiFake.noticiasComSucesso(quantidade: 2),
+      );
 
       await tester.pumpWidget(montarApp(service));
       await tester.pumpAndSettle();
@@ -239,7 +256,7 @@ void main() {
       await tester.pumpAndSettle();
 
       // Favorita na tela de detalhes.
-      await tester.tap(find.byIcon(Icons.favorite_border));
+      await tester.tap(find.byTooltip('Favoritar notícia'));
       await tester.pump(const Duration(seconds: 2));
       await tester.pumpAndSettle();
 
@@ -253,13 +270,16 @@ void main() {
       // Abre novamente: o detalhe já nasce favoritado.
       await tester.tap(find.text('Título da notícia 1'));
       await tester.pumpAndSettle();
-      expect(find.byIcon(Icons.favorite), findsOneWidget);
+      expect(find.byTooltip('Desfavoritar notícia'), findsOneWidget);
+      expect(find.text('Favorita'), findsOneWidget);
     });
 
-    testWidgets('desfavoritar nos detalhes remove o favorito do feed',
-        (tester) async {
-      final NoticiaService service =
-          NoticiaService(client: ApiFake.noticiasComSucesso(quantidade: 1));
+    testWidgets('desfavoritar nos detalhes remove o favorito do feed', (
+      tester,
+    ) async {
+      final NoticiaService service = NoticiaService(
+        client: ApiFake.noticiasComSucesso(quantidade: 1),
+      );
 
       await tester.pumpWidget(montarApp(service, favoritos: <int>{1}));
       await tester.pumpAndSettle();
@@ -278,17 +298,40 @@ void main() {
       expect(find.byIcon(Icons.favorite), findsNothing);
     });
 
-    testWidgets('imagem de capa tem fallback quando a URL falha',
-        (tester) async {
-      final NoticiaService service =
-          NoticiaService(client: ApiFake.noticiasComSucesso(quantidade: 1));
+    testWidgets('imagem de capa do feed tem fallback quando a URL falha', (
+      tester,
+    ) async {
+      final NoticiaService service = NoticiaService(
+        client: ApiFake.noticiasComSucesso(quantidade: 1),
+      );
 
       await tester.pumpWidget(montarApp(service));
       await tester.pumpAndSettle();
 
-      // Em ambiente de teste a imagem de rede falha e o placeholder local é
-      // exibido, mantendo o layout estável.
+      // A miniatura é um widget CapaNoticia com Hero por notícia.
       expect(find.byType(CapaNoticia), findsOneWidget);
+    });
+
+    testWidgets('placeholder local é exibido quando a imagem remota falha', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: Scaffold(
+            body: CapaNoticia(
+              urlImagem: 'https://fotos-indisponiveis.test/miniatura.png',
+              heroTag: 5,
+              tituloPlaceholder: 'Notícia',
+            ),
+          ),
+        ),
+      );
+
+      await tester.runAsync(
+        () => Future<void>.delayed(const Duration(milliseconds: 400)),
+      );
+      await tester.pumpAndSettle();
+
       expect(find.textContaining('Imagem indisponível'), findsOneWidget);
     });
   });

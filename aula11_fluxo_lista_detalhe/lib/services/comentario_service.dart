@@ -4,10 +4,7 @@ import 'package:http/http.dart' as http;
 
 import '../models/comentario_model.dart';
 import 'noticia_service.dart'
-    show
-        NoticiaFormatoException,
-        NoticiaHttpException,
-        NoticiaRedeException;
+    show NoticiaFormatoException, NoticiaHttpException, NoticiaRedeException;
 
 /// Serviço de consumo da API REST de comentários.
 ///
@@ -27,9 +24,9 @@ class ComentarioService {
     http.Client? client,
     String? endpointBase,
     Duration timeout = const Duration(seconds: 15),
-  })  : _client = client ?? http.Client(),
-        _endpointBase = Uri.parse(endpointBase ?? endpointBasePadrao),
-        _timeout = timeout;
+  }) : _client = client ?? http.Client(),
+       _endpointBase = Uri.parse(endpointBase ?? endpointBasePadrao),
+       _timeout = timeout;
 
   /// Busca os comentários da notícia [noticiaId].
   ///
@@ -39,8 +36,9 @@ class ComentarioService {
   /// [NoticiaFormatoException] para JSON/lista inválidos e
   /// [NoticiaRedeException] para falhas de rede e timeout.
   Future<List<ComentarioModel>> buscarComentarios(int noticiaId) async {
-    final Uri endpoint =
-        _endpointBase.replace(path: '/posts/$noticiaId/comments');
+    final Uri endpoint = _endpointBase.replace(
+      path: '/posts/$noticiaId/comments',
+    );
 
     final http.Response response;
     try {

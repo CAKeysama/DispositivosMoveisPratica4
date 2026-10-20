@@ -98,43 +98,43 @@ class _FeedNoticiasScreenState extends State<FeedNoticiasScreen> {
       ),
       body: FutureBuilder<List<NoticiaModel>>(
         future: _futureNoticias,
-        builder: (BuildContext context,
-            AsyncSnapshot<List<NoticiaModel>> snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const _EstadoCarregando();
-          }
+        builder:
+            (BuildContext context, AsyncSnapshot<List<NoticiaModel>> snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const _EstadoCarregando();
+              }
 
-          if (snapshot.hasError) {
-            return _EstadoErro(
-              mensagem: _mensagemDeErro(snapshot.error),
-              onTentarNovamente: _atualizarFeed,
-            );
-          }
-
-          final List<NoticiaModel> noticias =
-              snapshot.data ?? const <NoticiaModel>[];
-
-          if (noticias.isEmpty) {
-            return _EstadoVazio(onAtualizar: _atualizarFeed);
-          }
-
-          return RefreshIndicator(
-            onRefresh: _atualizarFeed,
-            child: ListView.builder(
-              physics: const AlwaysScrollableScrollPhysics(),
-              padding: const EdgeInsets.all(12),
-              itemCount: noticias.length,
-              itemBuilder: (BuildContext context, int index) {
-                final NoticiaModel noticia = noticias[index];
-                return _CardNoticia(
-                  noticia: noticia,
-                  favorita: _favoritos.contains(noticia.id),
-                  onTap: () => _abrirDetalhes(noticia),
+              if (snapshot.hasError) {
+                return _EstadoErro(
+                  mensagem: _mensagemDeErro(snapshot.error),
+                  onTentarNovamente: _atualizarFeed,
                 );
-              },
-            ),
-          );
-        },
+              }
+
+              final List<NoticiaModel> noticias =
+                  snapshot.data ?? const <NoticiaModel>[];
+
+              if (noticias.isEmpty) {
+                return _EstadoVazio(onAtualizar: _atualizarFeed);
+              }
+
+              return RefreshIndicator(
+                onRefresh: _atualizarFeed,
+                child: ListView.builder(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  padding: const EdgeInsets.all(12),
+                  itemCount: noticias.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    final NoticiaModel noticia = noticias[index];
+                    return _CardNoticia(
+                      noticia: noticia,
+                      favorita: _favoritos.contains(noticia.id),
+                      onTap: () => _abrirDetalhes(noticia),
+                    );
+                  },
+                ),
+              );
+            },
       ),
     );
   }
@@ -196,16 +196,18 @@ class _CardNoticia extends StatelessWidget {
                       noticia.titulo,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
-                      style: tema.textTheme.titleMedium
-                          ?.copyWith(fontWeight: FontWeight.bold),
+                      style: tema.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                     const SizedBox(height: 6),
                     Text(
                       noticia.resumo,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
-                      style: tema.textTheme.bodyMedium
-                          ?.copyWith(color: tema.colorScheme.onSurfaceVariant),
+                      style: tema.textTheme.bodyMedium?.copyWith(
+                        color: tema.colorScheme.onSurfaceVariant,
+                      ),
                     ),
                     const SizedBox(height: 6),
                     Row(
@@ -271,10 +273,7 @@ class _EstadoErro extends StatelessWidget {
   final String mensagem;
   final VoidCallback onTentarNovamente;
 
-  const _EstadoErro({
-    required this.mensagem,
-    required this.onTentarNovamente,
-  });
+  const _EstadoErro({required this.mensagem, required this.onTentarNovamente});
 
   @override
   Widget build(BuildContext context) {

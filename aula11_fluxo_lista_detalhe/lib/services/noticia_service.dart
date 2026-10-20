@@ -61,9 +61,9 @@ class NoticiaService {
     http.Client? client,
     String? endpoint,
     Duration timeout = const Duration(seconds: 15),
-  })  : _client = client ?? http.Client(),
-        _endpoint = Uri.parse(endpoint ?? endpointPadrao),
-        _timeout = timeout;
+  }) : _client = client ?? http.Client(),
+       _endpoint = Uri.parse(endpoint ?? endpointPadrao),
+       _timeout = timeout;
 
   /// Busca a lista completa de notícias da API.
   ///

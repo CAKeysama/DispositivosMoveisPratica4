@@ -13,8 +13,10 @@ void main() {
 
       expect(noticia.id, 7);
       expect(noticia.titulo, 'Título de teste');
-      expect(noticia.conteudoCompleto,
-          'Corpo da notícia com mais de quarenta caracteres no texto.');
+      expect(
+        noticia.conteudoCompleto,
+        'Corpo da notícia com mais de quarenta caracteres no texto.',
+      );
       expect(noticia.autor, 'Autor ID 3');
       expect(noticia.urlImagem, 'https://picsum.photos/seed/post_7/1200/600');
       expect(noticia.dataPublicacao, isNull);
@@ -34,19 +36,21 @@ void main() {
       expect(noticia.conteudoCompleto.length, 100);
     });
 
-    test('resumo de texto com exatamente 40 caracteres não ganha reticências',
-        () {
-      final String corpo = 'B' * 40;
-      final NoticiaModel noticia = NoticiaModel.fromJson(<String, dynamic>{
-        'id': 2,
-        'userId': 1,
-        'title': 'T',
-        'body': corpo,
-      });
+    test(
+      'resumo de texto com exatamente 40 caracteres não ganha reticências',
+      () {
+        final String corpo = 'B' * 40;
+        final NoticiaModel noticia = NoticiaModel.fromJson(<String, dynamic>{
+          'id': 2,
+          'userId': 1,
+          'title': 'T',
+          'body': corpo,
+        });
 
-      expect(noticia.resumo, corpo);
-      expect(noticia.resumo.length, 40);
-    });
+        expect(noticia.resumo, corpo);
+        expect(noticia.resumo.length, 40);
+      },
+    );
 
     test('texto menor que 40 caracteres não gera erro de substring', () {
       final NoticiaModel noticia = NoticiaModel.fromJson(<String, dynamic>{
@@ -71,8 +75,9 @@ void main() {
     });
 
     test('trata campos ausentes de forma defensiva', () {
-      final NoticiaModel noticia =
-          NoticiaModel.fromJson(<String, dynamic>{'id': 9});
+      final NoticiaModel noticia = NoticiaModel.fromJson(<String, dynamic>{
+        'id': 9,
+      });
 
       expect(noticia.id, 9);
       expect(noticia.titulo, '');
@@ -133,8 +138,10 @@ void main() {
     });
 
     test('urlImagemPadrao é determinística por id', () {
-      expect(NoticiaModel.urlImagemPadrao(10),
-          'https://picsum.photos/seed/post_10/1200/600');
+      expect(
+        NoticiaModel.urlImagemPadrao(10),
+        'https://picsum.photos/seed/post_10/1200/600',
+      );
     });
   });
 

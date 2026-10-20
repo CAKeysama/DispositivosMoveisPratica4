@@ -41,10 +41,7 @@ class ApiFake {
   }
 
   /// Cliente que responde com [body] e [statusCode] para qualquer GET.
-  static MockClient resposta({
-    required int statusCode,
-    required String body,
-  }) {
+  static MockClient resposta({required int statusCode, required String body}) {
     return MockClient((http.Request request) async {
       return http.Response(body, statusCode);
     });

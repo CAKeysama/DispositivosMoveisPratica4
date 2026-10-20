@@ -10,22 +10,27 @@ import '../helpers/api_fake.dart';
 
 void main() {
   group('NoticiaService.buscarNoticias', () {
-    test('converte a lista JSON em objetos NoticiaModel (status 200)',
-        () async {
-      final NoticiaService service =
-          NoticiaService(client: ApiFake.noticiasComSucesso(quantidade: 3));
+    test(
+      'converte a lista JSON em objetos NoticiaModel (status 200)',
+      () async {
+        final NoticiaService service = NoticiaService(
+          client: ApiFake.noticiasComSucesso(quantidade: 3),
+        );
 
-      final List<NoticiaModel> noticias = await service.buscarNoticias();
+        final List<NoticiaModel> noticias = await service.buscarNoticias();
 
-      expect(noticias, hasLength(3));
-      expect(noticias.first, isA<NoticiaModel>());
-      expect(noticias[0].id, 1);
-      expect(noticias[0].titulo, 'Título da notícia 1');
-      expect(noticias[0].autor, 'Autor ID 11');
-      expect(noticias[0].urlImagem,
-          'https://picsum.photos/seed/post_1/1200/600');
-      expect(noticias[2].id, 3);
-    });
+        expect(noticias, hasLength(3));
+        expect(noticias.first, isA<NoticiaModel>());
+        expect(noticias[0].id, 1);
+        expect(noticias[0].titulo, 'Título da notícia 1');
+        expect(noticias[0].autor, 'Autor ID 11');
+        expect(
+          noticias[0].urlImagem,
+          'https://picsum.photos/seed/post_1/1200/600',
+        );
+        expect(noticias[2].id, 3);
+      },
+    );
 
     test('respeita o mapeamento resumo/conteúdoCompleto', () async {
       final NoticiaService service = NoticiaService(
@@ -55,10 +60,19 @@ void main() {
 
       await expectLater(
         service.buscarNoticias(),
-        throwsA(isA<NoticiaHttpException>()
-            .having((NoticiaHttpException e) => e.statusCode, 'statusCode', 500)
-            .having((NoticiaHttpException e) => e.mensagem, 'mensagem',
-                contains('500'))),
+        throwsA(
+          isA<NoticiaHttpException>()
+              .having(
+                (NoticiaHttpException e) => e.statusCode,
+                'statusCode',
+                500,
+              )
+              .having(
+                (NoticiaHttpException e) => e.mensagem,
+                'mensagem',
+                contains('500'),
+              ),
+        ),
       );
     });
 
@@ -84,24 +98,27 @@ void main() {
       );
     });
 
-    test('lança NoticiaFormatoException quando a resposta não é uma lista',
-        () async {
-      final NoticiaService service = NoticiaService(
-        client: ApiFake.resposta(
-          statusCode: 200,
-          body: jsonEncode(<String, dynamic>{'id': 1}),
-        ),
-      );
+    test(
+      'lança NoticiaFormatoException quando a resposta não é uma lista',
+      () async {
+        final NoticiaService service = NoticiaService(
+          client: ApiFake.resposta(
+            statusCode: 200,
+            body: jsonEncode(<String, dynamic>{'id': 1}),
+          ),
+        );
 
-      await expectLater(
-        service.buscarNoticias(),
-        throwsA(isA<NoticiaFormatoException>()),
-      );
-    });
+        await expectLater(
+          service.buscarNoticias(),
+          throwsA(isA<NoticiaFormatoException>()),
+        );
+      },
+    );
 
     test('lança NoticiaRedeException em falha de rede', () async {
-      final NoticiaService service =
-          NoticiaService(client: ApiFake.falhaDeRede());
+      final NoticiaService service = NoticiaService(
+        client: ApiFake.falhaDeRede(),
+      );
 
       await expectLater(
         service.buscarNoticias(),
@@ -139,8 +156,9 @@ void main() {
     });
 
     test('lista vazia retorna lista vazia sem erro', () async {
-      final NoticiaService service =
-          NoticiaService(client: ApiFake.resposta(statusCode: 200, body: '[]'));
+      final NoticiaService service = NoticiaService(
+        client: ApiFake.resposta(statusCode: 200, body: '[]'),
+      );
 
       final List<NoticiaModel> noticias = await service.buscarNoticias();
       expect(noticias, isEmpty);

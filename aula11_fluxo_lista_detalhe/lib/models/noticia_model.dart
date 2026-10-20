@@ -67,9 +67,7 @@ class NoticiaModel {
   /// lançar exceções durante a conversão.
   factory NoticiaModel.fromJson(Map<String, dynamic> json) {
     final dynamic idBruto = json['id'];
-    final int id = idBruto is int
-        ? idBruto
-        : int.tryParse('$idBruto') ?? 0;
+    final int id = idBruto is int ? idBruto : int.tryParse('$idBruto') ?? 0;
 
     final String conteudo = _textoOuVazio(json['body']);
     final String titulo = _textoOuVazio(json['title']);
@@ -116,8 +114,7 @@ class NoticiaModel {
     return 'Autor ID ${id ?? 0}';
   }
 
-  static String _textoOuVazio(dynamic valor) =>
-      valor is String ? valor : '';
+  static String _textoOuVazio(dynamic valor) => valor is String ? valor : '';
 
   static String? _dataOpcional(dynamic valor) {
     if (valor is! String) {
@@ -142,16 +139,15 @@ class NoticiaModel {
 
   @override
   int get hashCode => Object.hash(
-        id,
-        titulo,
-        resumo,
-        conteudoCompleto,
-        autor,
-        urlImagem,
-        dataPublicacao,
-      );
+    id,
+    titulo,
+    resumo,
+    conteudoCompleto,
+    autor,
+    urlImagem,
+    dataPublicacao,
+  );
 
   @override
-  String toString() =>
-      'NoticiaModel(id: $id, titulo: $titulo, autor: $autor)';
+  String toString() => 'NoticiaModel(id: $id, titulo: $titulo, autor: $autor)';
 }

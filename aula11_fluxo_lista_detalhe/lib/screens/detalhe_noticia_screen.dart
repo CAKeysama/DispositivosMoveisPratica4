@@ -3,8 +3,7 @@ import 'package:flutter/material.dart';
 import '../models/comentario_model.dart';
 import '../models/noticia_model.dart';
 import '../services/comentario_service.dart';
-import '../services/noticia_service.dart'
-    show NoticiaServiceException;
+import '../services/noticia_service.dart' show NoticiaServiceException;
 import '../widgets/capa_noticia.dart';
 
 /// Tela de detalhes da notícia (destino do padrão Master-Detail).
@@ -88,14 +87,13 @@ class _DetalheNoticiaScreenState extends State<DetalheNoticiaScreen> {
           ),
           actions: <Widget>[
             IconButton(
-              tooltip:
-                  _favoritada ? 'Desfavoritar notícia' : 'Favoritar notícia',
+              tooltip: _favoritada
+                  ? 'Desfavoritar notícia'
+                  : 'Favoritar notícia',
               onPressed: _alternarFavorito,
               icon: Icon(
                 _favoritada ? Icons.favorite : Icons.favorite_border,
-                color: _favoritada
-                    ? Theme.of(context).colorScheme.error
-                    : null,
+                color: _favoritada ? Theme.of(context).colorScheme.error : null,
               ),
             ),
           ],
@@ -115,9 +113,8 @@ class _DetalheNoticiaScreenState extends State<DetalheNoticiaScreen> {
               const SizedBox(height: 16),
               Text(
                 noticia.titulo,
-                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
+                style: Theme.of(context).textTheme.headlineSmall
+                    ?.copyWith(fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 12),
               Wrap(
@@ -125,17 +122,13 @@ class _DetalheNoticiaScreenState extends State<DetalheNoticiaScreen> {
                 runSpacing: 8,
                 crossAxisAlignment: WrapCrossAlignment.center,
                 children: <Widget>[
-                  _MetaDado(
-                    icone: Icons.person_outline,
-                    texto: noticia.autor,
-                  ),
+                  _MetaDado(icone: Icons.person_outline, texto: noticia.autor),
                   _MetaDado(
                     icone: Icons.calendar_today_outlined,
                     texto: noticia.dataPublicacao ?? 'Data não informada',
                   ),
                   _MetaDado(
-                    icone:
-                        _favoritada ? Icons.favorite : Icons.favorite_border,
+                    icone: _favoritada ? Icons.favorite : Icons.favorite_border,
                     texto: _favoritada ? 'Favorita' : 'Não favorita',
                     cor: _favoritada
                         ? Theme.of(context).colorScheme.error
@@ -148,9 +141,7 @@ class _DetalheNoticiaScreenState extends State<DetalheNoticiaScreen> {
               const SizedBox(height: 8),
               Text(
                 noticia.conteudoCompleto,
-                style: Theme.of(context)
-                    .textTheme
-                    .bodyLarge
+                style: Theme.of(context).textTheme.bodyLarge
                     ?.copyWith(height: 1.5),
               ),
               const SizedBox(height: 24),
@@ -158,9 +149,8 @@ class _DetalheNoticiaScreenState extends State<DetalheNoticiaScreen> {
               const SizedBox(height: 8),
               Text(
                 'Comentários',
-                style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
+                style: Theme.of(context).textTheme.titleLarge
+                    ?.copyWith(fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 12),
               // Seção independente: erros aqui não afetam a notícia.
@@ -181,15 +171,12 @@ class _MetaDado extends StatelessWidget {
   final String texto;
   final Color? cor;
 
-  const _MetaDado({
-    required this.icone,
-    required this.texto,
-    this.cor,
-  });
+  const _MetaDado({required this.icone, required this.texto, this.cor});
 
   @override
   Widget build(BuildContext context) {
-    final Color? corTexto = cor ?? Theme.of(context).colorScheme.onSurfaceVariant;
+    final Color? corTexto =
+        cor ?? Theme.of(context).colorScheme.onSurfaceVariant;
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
@@ -210,10 +197,7 @@ class _SecaoComentarios extends StatefulWidget {
   final int noticiaId;
   final ComentarioService? comentarioService;
 
-  const _SecaoComentarios({
-    required this.noticiaId,
-    this.comentarioService,
-  });
+  const _SecaoComentarios({required this.noticiaId, this.comentarioService});
 
   @override
   State<_SecaoComentarios> createState() => _SecaoComentariosState();
@@ -245,46 +229,49 @@ class _SecaoComentariosState extends State<_SecaoComentarios> {
   Widget build(BuildContext context) {
     return FutureBuilder<List<ComentarioModel>>(
       future: _futureComentarios,
-      builder: (BuildContext context,
-          AsyncSnapshot<List<ComentarioModel>> snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Padding(
-            padding: EdgeInsets.symmetric(vertical: 24),
-            child: Center(child: CircularProgressIndicator()),
-          );
-        }
+      builder:
+          (
+            BuildContext context,
+            AsyncSnapshot<List<ComentarioModel>> snapshot,
+          ) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Padding(
+                padding: EdgeInsets.symmetric(vertical: 24),
+                child: Center(child: CircularProgressIndicator()),
+              );
+            }
 
-        if (snapshot.hasError) {
-          final Object? erro = snapshot.error;
-          final String mensagem = erro is NoticiaServiceException
-              ? erro.mensagem
-              : 'Não foi possível carregar os comentários.';
-          return _ErroComentarios(
-            mensagem: mensagem,
-            onTentarNovamente: _tentarNovamente,
-          );
-        }
+            if (snapshot.hasError) {
+              final Object? erro = snapshot.error;
+              final String mensagem = erro is NoticiaServiceException
+                  ? erro.mensagem
+                  : 'Não foi possível carregar os comentários.';
+              return _ErroComentarios(
+                mensagem: mensagem,
+                onTentarNovamente: _tentarNovamente,
+              );
+            }
 
-        final List<ComentarioModel> comentarios =
-            snapshot.data ?? const <ComentarioModel>[];
+            final List<ComentarioModel> comentarios =
+                snapshot.data ?? const <ComentarioModel>[];
 
-        if (comentarios.isEmpty) {
-          return const Padding(
-            padding: EdgeInsets.symmetric(vertical: 16),
-            child: Text(
-              'Nenhum comentário para esta notícia.',
-              style: TextStyle(fontStyle: FontStyle.italic),
-            ),
-          );
-        }
+            if (comentarios.isEmpty) {
+              return const Padding(
+                padding: EdgeInsets.symmetric(vertical: 16),
+                child: Text(
+                  'Nenhum comentário para esta notícia.',
+                  style: TextStyle(fontStyle: FontStyle.italic),
+                ),
+              );
+            }
 
-        return Column(
-          children: <Widget>[
-            for (final ComentarioModel comentario in comentarios)
-              _CardComentario(comentario: comentario),
-          ],
-        );
-      },
+            return Column(
+              children: <Widget>[
+                for (final ComentarioModel comentario in comentarios)
+                  _CardComentario(comentario: comentario),
+              ],
+            );
+          },
     );
   }
 }
@@ -323,8 +310,9 @@ class _CardComentario extends StatelessWidget {
                     children: <Widget>[
                       Text(
                         comentario.nome,
-                        style: tema.textTheme.titleSmall
-                            ?.copyWith(fontWeight: FontWeight.bold),
+                        style: tema.textTheme.titleSmall?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                       if (comentario.email.isNotEmpty)
                         Text(
